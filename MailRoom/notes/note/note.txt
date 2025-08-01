@@ -1,0 +1,3 @@
+game calls get_all_mail(_week)
+game calls get_all_next()
+game calls set_next()

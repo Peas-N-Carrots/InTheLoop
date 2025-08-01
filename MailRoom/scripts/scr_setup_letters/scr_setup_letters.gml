@@ -5,19 +5,23 @@ function add_letter(_letter_settings){
 	return _new_letter;
 }
 
-function setup_weekly_letters(){
+function recieve_letters(_week, _input_letters){
 	var _letters = []
 	
-	var _letter_data = get_letter_data(1);
-	var _letters_to_add = [];
+	var _letter_data = get_letter_data(_week);
+	var _letter_names = struct_get_names(_letter_data)
 	
-	if (true) {
-		array_push(_letters_to_add, _letter_data.test_letter_1);
-	}
-	
-	for (var _i = 0; _i < array_length(_letters_to_add); _i++) {
-		array_push(_letters, add_letter(_letters_to_add[_i]));
+	for (var _i = 0; _i < array_length(_letter_names); _i++) {
+		var _letter = _letter_data[$ _letter_names[_i]];
+		
+		if (!_letter.previous || array_contains(_input_letters, _letter.previous)) {
+			array_push(_letters, add_letter(_letter)); // idk if this is how it works
+		}
 	}
 	
 	return _letters
+}
+
+function check_criteria() {
+	
 }
