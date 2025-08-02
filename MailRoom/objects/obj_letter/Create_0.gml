@@ -3,8 +3,6 @@
 
 function swap_field(_index, _val) {
 	fields[_index][1] = _val
-	
-	update_output_text()
 }
 
 function update_output_text() {
@@ -38,6 +36,7 @@ function split_text(_start_x, _start_y, _text, _len) {
 	var _y = _start_y;
 	var _line_starts = [0];
 	var _button = false;
+	var _button_this_word = false;
 	var _buttons = []
 	
 	var _next_button = pointer_null;
@@ -49,24 +48,41 @@ function split_text(_start_x, _start_y, _text, _len) {
 		
 		var _zero_width = "~";
 		if (_char == _zero_width) {
+			var _button_number = string_copy(_text, _i+1, 1);
+			
 			_text = string_copy(_text, 1, _i - 1) + string_copy(_text, _i + 2, string_length(_text) - _i - 1);
 			_button = !_button;
+			
 			if (_button) {
-				_next_button = instance_create_layer(_x + FONT_TRACKING, _y, "Instances", obj_button);
+				_next_button = instance_create_layer(_x, _y, "Instances", obj_button);
 				_next_button.image_xscale = 0;
+				_next_button.image_alpha = 0.2;
+				
+				var _field = fields[_button_number];
+				_next_button.field_type = _field[0];
+				_next_button.field_value = _field[1];
+				_next_button.index = _button_number;
+				
 				array_push(_buttons, _next_button);
-			} else {
-				_next_button = pointer_null;
+				_button_this_word = true;
 			}
 			_i --;
 		} else {
 			if (_char == " " && !_button){
 				_space_i = _i;
-			} else if (_i - _line_starts[array_length(_line_starts) - 1] >= _len) {
+				_button_this_word = false;
+				_next_button = pointer_null;
+			} else if (_char == "\n" || _i - _line_starts[array_length(_line_starts) - 1] >= _len) {
+				if (_char == "\n") {
+					_space_i = _i;
+					_button_this_word = false;
+					_next_button = pointer_null;
+				}
+				
 				array_push(_line_starts, _space_i + 1)
 				_y += FONT_LEADING;
 				_x = _start_x;
-				_x += FONT_TRACKING * (_i - _line_starts[array_length(_line_starts) - 1] - 1)
+				_x += FONT_TRACKING * (_i - _line_starts[array_length(_line_starts) - 1])
 				
 				if (_next_button) {
 					_next_button.x = _start_x
@@ -74,7 +90,7 @@ function split_text(_start_x, _start_y, _text, _len) {
 				}
 			}
 			_x += FONT_TRACKING;
-			if (_next_button) {
+			if (_button && _next_button) {
 				_next_button.image_xscale ++;
 			}
 		}
@@ -118,7 +134,7 @@ function draw_letter_text(_start_x, _start_y, _text, _line_starts) {
 	}
 }
 
-function set_paper_position(_x, _y) {
+function set_paper_position(_x = x + mouse_x - prev_mouse_x, _y = y + mouse_y - prev_mouse_y) {
 	var _delta_x = _x - x;
 	var _delta_y = _y - y;
 	

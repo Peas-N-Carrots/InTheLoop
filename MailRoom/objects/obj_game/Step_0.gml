@@ -1,4 +1,4 @@
-
+script_execute(state_map[$ state]);
 
 
 if keyboard_check_pressed(vk_space) {
