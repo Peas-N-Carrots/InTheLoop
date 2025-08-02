@@ -1,3 +1,6 @@
+#macro FONT_TRACKING 7
+#macro FONT_LEADING 12
+
 function swap_field(_index, _val) {
 	fields[_index][1] = _val
 	
@@ -6,7 +9,16 @@ function swap_field(_index, _val) {
 
 function update_output_text() {
 	output_text = plug_in_text(letter_text, fields);
-	line_starts = split_text(x, y, output_text, 15);
+	
+	for (var _i = 0; _i < array_length(buttons); _i++) {
+		with (buttons[_i]) {
+			instance_destroy();
+		}
+	}
+	
+	var _val = split_text(x, y, output_text, 30);
+	line_starts = _val[0];
+	buttons = _val[1];
 }
 
 function plug_in_text(_input_string, _fields) {
@@ -26,6 +38,7 @@ function split_text(_start_x, _start_y, _text, _len) {
 	var _y = _start_y;
 	var _line_starts = [0];
 	var _button = false;
+	var _buttons = []
 	
 	var _next_button = pointer_null;
 	
@@ -39,39 +52,40 @@ function split_text(_start_x, _start_y, _text, _len) {
 			_text = string_copy(_text, 1, _i - 1) + string_copy(_text, _i + 2, string_length(_text) - _i - 1);
 			_button = !_button;
 			if (_button) {
-				_next_button = instance_create_layer(_x, _y, "Instances", obj_button);
-				_next_button.image_alpha = 0.2;
+				_next_button = instance_create_layer(_x + FONT_TRACKING, _y, "Instances", obj_button);
 				_next_button.image_xscale = 0;
+				array_push(_buttons, _next_button);
 			} else {
 				_next_button = pointer_null;
 			}
 			_i --;
 		} else {
-			if (_char == " "){
+			if (_char == " " && !_button){
 				_space_i = _i;
-				_x += 16;
 			} else if (_i - _line_starts[array_length(_line_starts) - 1] >= _len) {
 				array_push(_line_starts, _space_i + 1)
-				_y += 16;
+				_y += FONT_LEADING;
 				_x = _start_x;
-				_x += 16 * (_i - _line_starts[array_length(_line_starts) - 1] - 1)
+				_x += FONT_TRACKING * (_i - _line_starts[array_length(_line_starts) - 1] - 1)
 				
 				if (_next_button) {
 					_next_button.x = _start_x
 					_next_button.y = _y
 				}
 			}
-			_x += 16;
+			_x += FONT_TRACKING;
 			if (_next_button) {
 				_next_button.image_xscale ++;
 			}
 		}
 	}
 	
-	return _line_starts;
+	return [_line_starts, _buttons];
 }
 
 function draw_letter_text(_start_x, _start_y, _text, _line_starts) {
+	draw_set_font(fnt_letter);
+	
 	var _x = _start_x;
 	var _y = _start_y;
 	var _line = 1;
@@ -85,21 +99,36 @@ function draw_letter_text(_start_x, _start_y, _text, _line_starts) {
 		var _zero_width = "~";
 		if (_char != _zero_width) {
 			if (_line < array_length(_line_starts) && _i == _line_starts[_line]) {
-				_y += 16;
+				_y += FONT_LEADING;
 				_x = _start_x;
 				_line ++;
 			}
 			
-			if (_button) draw_set_color(c_red);
+			if (_button) draw_set_color(c_red) else draw_set_color(c_black);
 			draw_text(_x, _y, _char);
 			draw_set_color(c_white)
 			
-			_x += 16;
+			_x += FONT_TRACKING;
 		} else {
 			_button_id = string_copy(_text, _i + 1, 1);
 			_text = string_copy(_text, 1, _i - 1) + string_copy(_text, _i + 2, string_length(_text) - _i - 1);
 			_button = !_button;
 			_i --;
+		}
+	}
+}
+
+function set_paper_position(_x, _y) {
+	var _delta_x = _x - x;
+	var _delta_y = _y - y;
+	
+	x += _delta_x
+	y += _delta_y
+	
+	for (var _i = 0; _i < array_length(buttons); _i++) {
+		with (buttons[_i]) {
+			x += _delta_x
+			y += _delta_y
 		}
 	}
 }
@@ -110,6 +139,9 @@ function touching_mouse(_x, _y, _sep_x, _sep_y) {
 
 output_text = "";
 line_starts = [];
-fields = [[FIELD_TYPES.NAME, "Pee-Face"], [FIELD_TYPES.NAME, "Poop-Face"]]; //delete me
+buttons = [];
 
 update_output_text();
+
+prev_mouse_x = 0;
+prev_mouse_y = 0;

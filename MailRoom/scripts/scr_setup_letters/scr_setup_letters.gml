@@ -1,7 +1,8 @@
-function add_letter(_letter_settings){
+function create_letter(_letter_settings){
 	var _new_letter = instance_create_layer(0, 0, "Instances", obj_letter);
 	_new_letter.letter_text = _letter_settings.letter_text
 	_new_letter.fields = _letter_settings.fields
+	_new_letter.update_output_text();
 	return _new_letter;
 }
 
@@ -15,7 +16,7 @@ function recieve_letters(_week, _input_letters){
 		var _letter = _letter_data[$ _letter_names[_i]];
 		
 		if (!_letter.previous || array_contains(_input_letters, _letter.previous)) {
-			array_push(_letters, add_letter(_letter)); // idk if this is how it works
+			array_push(_letters, create_letter(_letter)); // idk if this is how it works
 		}
 	}
 	

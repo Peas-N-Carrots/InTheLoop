@@ -1,3 +1,6 @@
+
+
+
 if keyboard_check_pressed(vk_space) {
 	if (instance_exists(obj_letter)) {
 		with (obj_letter) {

@@ -32,7 +32,10 @@
     {"resourceType":"GMObjectProperty","resourceVersion":"1.0","name":"letter_text","filters":[],"listItems":[],"multiselect":false,"rangeEnabled":false,"rangeMax":10.0,"rangeMin":0.0,"value":"","varType":2,},
   ],
   "solid": false,
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_paper",
+    "path": "sprites/spr_paper/spr_paper.yy",
+  },
   "spriteMaskId": null,
   "visible": true,
 }
