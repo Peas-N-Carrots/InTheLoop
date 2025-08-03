@@ -1,8 +1,15 @@
 function create_letter(_letter_settings){
 	var _new_letter = instance_create_layer(0, 0, "Instances", obj_letter);
-	_new_letter.letter_text = _letter_settings.letter_text
-	_new_letter.fields = _letter_settings.fields
-	_new_letter.update_output_text();
+	
+	with (_new_letter) {
+		letter_text = _letter_settings.letter_text;
+		fields = _letter_settings.fields;
+		fields_defaults = [];
+		for(var _i = 0; _i < array_length(fields); _i++) {
+			array_push(fields_defaults, fields[_i][1]);
+		}
+	update_output_text();
+	}
 	return _new_letter;
 }
 

@@ -1,7 +1,9 @@
 enum FIELD_TYPES {
-	NAME,
+	DATE,
 	NUMBER,
-	OBJECT
+	COST,
+	NOUN,
+	VERB
 }
 
 function get_letter_data(_week){
@@ -10,22 +12,22 @@ function get_letter_data(_week){
 			return {
 				test_1: {
 					letter_text: "Dear ~0~,\n\nPlease produce ~1~ units of ~2~.\n\nSincerely,\n~3~",
-					fields: [[FIELD_TYPES.NAME, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.OBJECT, "ice cream"], [FIELD_TYPES.NAME, "Management"]]
+					fields: [[FIELD_TYPES.NOUN, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.NOUN, "ice creammmmmmmm"], [FIELD_TYPES.NOUN, "Management"]]
 				},
 				test_2: {
-					letter_text: "Dear ~0~,\n\nPlease produce ~1~ units of ~2~.\n\nSincerely,\n~3~",
-					fields: [[FIELD_TYPES.NAME, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.OBJECT, "ice cream"], [FIELD_TYPES.NAME, "Management"]]
+					letter_text: "1234567890123456789012345678901 hi",
+					fields: []
 				},
 				test_3: {
 					letter_text: "Dear ~0~,\n\nPlease produce ~1~ units of ~2~.\n\nSincerely,\n~3~",
-					fields: [[FIELD_TYPES.NAME, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.OBJECT, "ice cream"], [FIELD_TYPES.NAME, "Management"]]
+					fields: [[FIELD_TYPES.NOUN, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.NOUN, "ice cream"], [FIELD_TYPES.NOUN, "Management"]]
 				}
 			}
 		case 2:
 			return {
 				response_1: {
 					letter_text: "Dear ~0~,\n\nPlease produce ~1~ units of ~2~.\n\nSincerely,\n~3~",
-					fields: [[FIELD_TYPES.NAME, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.OBJECT, "ice cream"], [FIELD_TYPES.NAME, "Management"]]
+					fields: [[FIELD_TYPES.NOUN, "Production Team"], [FIELD_TYPES.NUMBER, "50"], [FIELD_TYPES.NOUN, "ice cream"], [FIELD_TYPES.NOUN, "Management"]]
 				}
 			}
 	}

@@ -14,7 +14,7 @@ function update_output_text() {
 		}
 	}
 	
-	var _val = split_text(x, y, output_text, 30);
+	var _val = split_text(x, y, output_text, 34);
 	line_starts = _val[0];
 	buttons = _val[1];
 }
@@ -55,13 +55,13 @@ function split_text(_start_x, _start_y, _text, _len) {
 			
 			if (_button) {
 				_next_button = instance_create_layer(_x, _y, "Instances", obj_button);
-				_next_button.image_xscale = 0;
-				_next_button.image_alpha = 0.2;
 				
 				var _field = fields[_button_number];
 				_next_button.field_type = _field[0];
 				_next_button.field_value = _field[1];
 				_next_button.index = _button_number;
+				
+				_next_button.image_xscale = 0;
 				
 				array_push(_buttons, _next_button);
 				_button_this_word = true;
@@ -120,9 +120,11 @@ function draw_letter_text(_start_x, _start_y, _text, _line_starts) {
 				_line ++;
 			}
 			
-			if (_button) draw_set_color(c_red) else draw_set_color(c_black);
-			draw_text(_x, _y, _char);
-			draw_set_color(c_white)
+			if !(_button && global.game.carried_button == buttons[_button_id]) {
+				if (_button) draw_set_color(global.colors[$ fields[_button_id][0]]) else draw_set_color(c_black);
+				draw_text(_x, _y, _char);
+				draw_set_color(c_white);
+			}
 			
 			_x += FONT_TRACKING;
 		} else {
@@ -158,6 +160,8 @@ line_starts = [];
 buttons = [];
 
 update_output_text();
+
+carried = false;
 
 prev_mouse_x = 0;
 prev_mouse_y = 0;
