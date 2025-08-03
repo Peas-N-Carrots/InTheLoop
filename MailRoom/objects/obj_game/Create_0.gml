@@ -177,10 +177,14 @@ function game_state_swapping() {
 }
 
 function game_state_setup() {
+	var _all_slow = true;
 	for (var _i = 0; _i < array_length(letters); _i++) {
 		if (point_distance(0, 0, letters[_i].speed_x, letters[_i].speed_y) > 1) {
-			state = STATES.FREE;
+			_all_slow = false;
 		}
+	}
+	if (_all_slow) {
+		state = STATES.FREE;
 	}
 }
 
@@ -252,6 +256,8 @@ function create_mail_icon(_start_obj, _midd_obj, _end_obj) {
 	
 	_return.x = _return.x_1;
 	_return.y = _return.y_1;
+	
+	_return.depth = -100;
 	
 	return _return;
 }

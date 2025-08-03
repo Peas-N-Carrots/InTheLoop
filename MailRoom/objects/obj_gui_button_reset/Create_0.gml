@@ -25,5 +25,15 @@ function reset_active() {
 	return global.game.swapped;
 }
 
+function is_not_cutscene() {
+	switch (global.game.state) {
+		case STATES.FREE: case STATES.PICK_UP: case STATES.SWAPPING:
+			return true;
+		default:
+			return false;
+	}
+}
+
 action_script = reset_fields;
 condition_script = reset_active;
+active_script = is_not_cutscene;

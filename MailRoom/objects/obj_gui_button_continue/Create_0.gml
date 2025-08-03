@@ -6,4 +6,14 @@ function reset_fields() {
 	}
 }
 
+function is_not_cutscene() {
+	switch (global.game.state) {
+		case STATES.FREE: case STATES.PICK_UP: case STATES.SWAPPING:
+			return true;
+		default:
+			return false;
+	}
+}
+
 action_script = reset_fields;
+active_script = is_not_cutscene;

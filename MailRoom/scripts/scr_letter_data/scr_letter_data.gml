@@ -12,7 +12,8 @@ enum NAMES {
 	JETSTREAM,
 	FINANCIAL,
 	LEGAL,
-	TIMES
+	TIMES,
+	REVIEWERS
 }
 
 function get_letter_data(_week, _path){
@@ -117,7 +118,6 @@ function get_cutscene(_week, _path) {
 			break;
 	}
 	return _return;
-	
 }
 
 //helpers below
