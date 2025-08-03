@@ -8,7 +8,7 @@ function swap_field(_index, _val) {
 }
 
 function update_output_text() {
-	output_text = plug_in_text(letter_text, fields);
+	output_text = plug_in_text(letter_text, fields, addresses);
 	
 	for (var _i = 0; _i < array_length(buttons); _i++) {
 		with (buttons[_i]) {
@@ -21,7 +21,7 @@ function update_output_text() {
 	buttons = _val[1];
 }
 
-function plug_in_text(_input_string, _fields) {
+function plug_in_text(_input_string, _fields, _addresses) {
 	var _output = _input_string;
 
 	for (var _i = 0; _i < array_length(_fields); _i++) {
@@ -29,6 +29,10 @@ function plug_in_text(_input_string, _fields) {
 		var _value = "~" + string(_i) + _fields[_i][1] + "~" + string(_i);
 		_output = string_replace_all(_output, _token, _value);
 	}
+	
+	var _from = global.names[$ _addresses[0]];
+	var _to = global.names[$ _addresses[1]];
+	_output = "From: " + _from + "\nTo:" + _to + "\n\n" + _output
 	
 	return _output;
 }
@@ -160,8 +164,6 @@ function touching_mouse(_x, _y, _sep_x, _sep_y) {
 output_text = "";
 line_starts = [];
 buttons = [];
-
-update_output_text();
 
 carried = false;
 

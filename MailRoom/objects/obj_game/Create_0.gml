@@ -8,27 +8,57 @@ global.colors[$ FIELD_TYPES.NOUN] = c_blue;
 global.colors[$ FIELD_TYPES.NUMBER] = c_orange;
 global.colors[$ FIELD_TYPES.VERB] = c_red;
 
+global.names = {}
+global.names[$ NAMES.EXECUTIVE] = " # Executive Dept #";
+global.names[$ NAMES.MARKETING] = " @ Marketing Dept @"
+global.names[$ NAMES.JETSTREAM] = " ^ Jetstream Orders ^"
+global.names[$ NAMES.FINANCIAL] = " & Financial Dept &"
+global.names[$ NAMES.LEGAL] = " } Legal Dept }"
+global.names[$ NAMES.TIMES] = " { The Daily Times {"
+
 enum STATES	{
 	FREE,
 	PICK_UP,
 	SWAPPING,
 	SETUP,
-	CLEANUP
+	CLEANUP,
+	CUTSCENE
 }
 
 state = STATES.SETUP;
 carried_letter = pointer_null;
 carried_button = pointer_null;
 swapped = false;
+cutscene_obj = noone;
+mail_obj = noone;
 
-function add_letter(_letter_data, _letter_name) {
-	var _letter = create_letter(_letter_data[$ _letter_name]);
-	_letter.set_paper_position(-240, irandom_range(20, 40));
-	var _speed = 60 * power(0.8, array_length(letters));
-	var _dir = random_range(-2, 2);
-	_letter.speed_x = lengthdir_x(_speed, _dir);
-	_letter.speed_y = lengthdir_y(_speed, _dir);
-	array_push(letters, _letter);
+function create_letter(_letter_settings){
+	var _new_letter = instance_create_layer(0, 0, "Instances", obj_letter);
+	
+	with (_new_letter) {
+		letter_text = _letter_settings.letter_text;
+		fields = _letter_settings.fields;
+		title = _letter_settings.title;
+		addresses = _letter_settings.addresses;
+		fields_defaults = [];
+		for(var _i = 0; _i < array_length(fields); _i++) {
+			array_push(fields_defaults, fields[_i][1]);
+		}
+		update_output_text();
+	}
+	return _new_letter;
+}
+
+function add_letters(_letter_data) {
+	for (var _i = 0; _i < array_length(_letter_data); _i++) {
+		var _letter = create_letter(_letter_data[_i]);
+		_letter.set_paper_position(-240, irandom_range(20, 40));
+		var _speed = 60 * power(0.8, array_length(letters));
+		var _dir = random_range(-2, 2);
+		_letter.speed_x = lengthdir_x(_speed, _dir);
+		_letter.speed_y = lengthdir_y(_speed, _dir);
+		array_push(letters, _letter);
+	}
 }
 
 function sort_letters() {
@@ -42,19 +72,28 @@ function sort_letters() {
 	}
 }
 
-week = 0;
+function destroy_letters() {
+	for (var _i = 0; _i < array_length(letters); _i++) {
+		with (letters[_i]) {
+			for (var _j = 0; _j < array_length(buttons); _j++) {
+				instance_destroy(buttons[_j]);
+			}
+			instance_destroy();
+		}
+	}
+	letters = [];
+}
+
+week = 1;
+path = "";
 
 global.game = self;
 
-var _letter_data = get_letter_data(1);
+var _letter_data = get_letter_data(1, path);
 
-add_letter(_letter_data, "test_1")
-add_letter(_letter_data, "test_2")
-add_letter(_letter_data, "test_3")
+add_letters(_letter_data);
 
 sort_letters();
-
-//global.cabinet.get_mail()
 
 function game_state_free() {
 	if (mouse_check_button_pressed(mb_left) && !position_meeting(mouse_x, mouse_y, obj_gui_button)) {
@@ -146,11 +185,75 @@ function game_state_setup() {
 }
 
 function game_state_cleanup() {
+	var _all_above = true;
+	
 	for (var _i = 0; _i < array_length(letters); _i++) {
 		if (letters[_i].y > -300) {
-			//state = STATES.FREE;
+			_all_above = false;
 		}
 	}
+	
+	if (_all_above) {
+		path = get_path(week, letters);
+		
+		letter_icons = [];
+		for (var _i = 0; _i < array_length(letters); _i ++) {
+			var _addresses = letters[_i].addresses;
+			array_push(letter_icons, _addresses);
+		}
+		destroy_letters();
+		
+		if (instance_exists(cutscene_obj)) instance_destroy(cutscene_obj);
+		cutscene_obj = instance_create_layer(32, 32, "Instances", obj_cutscene_text);
+		cutscene_obj.text_value = get_cutscene(week, path);
+		
+		week ++;
+		
+		state = STATES.CUTSCENE;
+		/*var _letter_data = get_letter_data(week, path);
+		add_letters(_letter_data);
+		sort_letters();*/
+	} 
+}
+
+function game_state_cutscene() {
+	if (instance_exists(cutscene_obj) && cutscene_obj.progress > string_length(cutscene_obj.text_value) + 60) {
+		//if (instance_exists(cutscene_obj)) instance_destroy(cutscene_obj);
+	}
+	if (!instance_exists(mail_obj)) {
+		if (array_length(letter_icons) > 0) mail_obj = create_mail_between(array_pop(letter_icons));
+	}
+}
+
+function create_mail_between(_addresses) {
+	var _id_0 = pointer_null;
+	var _id_1 = pointer_null;
+	with (obj_cutscene_point) {
+		if (_addresses[0] == point_id) _id_0 = self
+		if (_addresses[1] == point_id) _id_1 = self
+	}
+	if (!_id_0 || !_id_1) {
+		return noone;
+	}
+	return create_mail_icon(_id_0, obj_cutscene_central_point, _id_1);
+}
+
+function create_mail_icon(_start_obj, _midd_obj, _end_obj) {
+	var _return = instance_create_layer(0, 0, "GUI_OBJECTS", obj_mail_icon);
+	
+	_return.x_1 = _start_obj.x;
+	_return.y_1 = _start_obj.y;
+	
+	_return.x_2 = _midd_obj.x;
+	_return.y_2 = _midd_obj.y;
+	
+	_return.x_3 = _end_obj.x;
+	_return.y_3 = _end_obj.y;
+	
+	_return.x = _return.x_1;
+	_return.y = _return.y_1;
+	
+	return _return;
 }
 
 function array_move_to_front(_arr, _index) {
@@ -204,6 +307,7 @@ state_map[$ STATES.PICK_UP] = game_state_pick_up;
 state_map[$ STATES.SWAPPING] = game_state_swapping;
 state_map[$ STATES.SETUP] = game_state_setup;
 state_map[$ STATES.CLEANUP] = game_state_cleanup;
+state_map[$ STATES.CUTSCENE] = game_state_cutscene;
 
 countdown = 0;
 
