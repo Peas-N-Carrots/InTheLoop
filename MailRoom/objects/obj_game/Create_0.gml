@@ -111,6 +111,7 @@ function game_state_free() {
 				}
 				letters = array_move_to_front(letters, _letter_i);
 				sort_letters();
+				audio_play_sound(sn_pickup_paper,0,false);
 			} else {
 				state = STATES.SWAPPING;
 				carried_button = _button;
@@ -118,6 +119,7 @@ function game_state_free() {
 				
 				carried_button_offset_x = carried_button.x - mouse_x;
 				carried_button_offset_y = carried_button.y - mouse_y;
+				audio_play_sound(sn_click,0,false);
 			}
 		}
 	}
@@ -133,6 +135,7 @@ function game_state_pick_up() {
 			set_paper_position(x + 4, y + 4);
 		}
 		carried_letter = pointer_null;
+		audio_play_sound(sn_drop_paper,0,false);
 	}
 }
 
@@ -164,6 +167,9 @@ function game_state_swapping() {
 				sort_letters();
 				
 				swapped = true;
+				audio_play_sound(sn_click,0,false);
+			} else {
+				audio_play_sound(sn_buzz,0,false);
 			}
 		}
 		

@@ -23,6 +23,7 @@ function continue_cutscene() {
 					swapped = false;
 					cutscene_obj = noone;
 					mail_obj = noone;
+					audio_play_sound(sn_drop_paper, 0, false);
 				
 				} else {
 					state = STATES.END;

@@ -5,6 +5,7 @@ if (!script_exists(active_script) || script_execute(active_script)) {
 			image_index = 2;
 			if (script_exists(action_script) && (!script_exists(condition_script) || script_execute(condition_script))) {
 				script_execute(action_script);
+				audio_play_sound(sn_click, 0, false);
 			}
 		} else {
 			image_index = 1;
