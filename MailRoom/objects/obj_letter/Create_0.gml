@@ -32,7 +32,7 @@ function plug_in_text(_input_string, _fields, _addresses) {
 	
 	var _from = global.names[$ _addresses[0]];
 	var _to = global.names[$ _addresses[1]];
-	_output = "From: " + _from + "\nTo:" + _to + "\n\n" + _output
+	_output = "From: " + _from + "\nTo:" + _to + "\n\n" + _output;
 	
 	return _output;
 }

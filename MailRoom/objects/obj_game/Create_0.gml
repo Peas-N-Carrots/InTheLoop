@@ -9,12 +9,13 @@ global.colors[$ FIELD_TYPES.NUMBER] = c_orange;
 global.colors[$ FIELD_TYPES.VERB] = c_red;
 
 global.names = {}
-global.names[$ NAMES.EXECUTIVE] = " # Executive Dept #";
-global.names[$ NAMES.MARKETING] = " @ Marketing Dept @"
-global.names[$ NAMES.JETSTREAM] = " ^ Jetstream Orders ^"
-global.names[$ NAMES.FINANCIAL] = " & Financial Dept &"
-global.names[$ NAMES.LEGAL] = " } Legal Dept }"
-global.names[$ NAMES.TIMES] = " { The Daily Times {"
+global.names[$ NAMES.EXECUTIVE] = " # Executive Dept # ";
+global.names[$ NAMES.MARKETING] = " @ Marketing Dept @ ";
+global.names[$ NAMES.JETSTREAM] = " ^ Jetstream Orders ^ ";
+global.names[$ NAMES.FINANCIAL] = " & Financial Dept & ";
+global.names[$ NAMES.LEGAL] = " } Legal Dept } ";
+global.names[$ NAMES.TIMES] = " { The Daily Times { ";
+global.names[$ NAMES.REVIEWERS] = " | Early Reviewers | ";
 
 enum STATES	{
 	FREE,
@@ -22,15 +23,17 @@ enum STATES	{
 	SWAPPING,
 	SETUP,
 	CLEANUP,
-	CUTSCENE
+	CUTSCENE,
+	END
 }
 
-state = STATES.SETUP;
+state = STATES.CLEANUP;
 carried_letter = pointer_null;
 carried_button = pointer_null;
 swapped = false;
 cutscene_obj = noone;
 mail_obj = noone;
+letter_icons = [];
 
 function create_letter(_letter_settings){
 	var _new_letter = instance_create_layer(0, 0, "Instances", obj_letter);
@@ -84,16 +87,10 @@ function destroy_letters() {
 	letters = [];
 }
 
-week = 1;
+week = 0;
 path = "";
 
 global.game = self;
-
-var _letter_data = get_letter_data(1, path);
-
-add_letters(_letter_data);
-
-sort_letters();
 
 function game_state_free() {
 	if (mouse_check_button_pressed(mb_left) && !position_meeting(mouse_x, mouse_y, obj_gui_button)) {
@@ -221,12 +218,13 @@ function game_state_cleanup() {
 }
 
 function game_state_cutscene() {
-	if (instance_exists(cutscene_obj) && cutscene_obj.progress > string_length(cutscene_obj.text_value) + 60) {
-		//if (instance_exists(cutscene_obj)) instance_destroy(cutscene_obj);
-	}
 	if (!instance_exists(mail_obj)) {
 		if (array_length(letter_icons) > 0) mail_obj = create_mail_between(array_pop(letter_icons));
 	}
+}
+
+function game_state_end() {
+	
 }
 
 function create_mail_between(_addresses) {
@@ -314,6 +312,7 @@ state_map[$ STATES.SWAPPING] = game_state_swapping;
 state_map[$ STATES.SETUP] = game_state_setup;
 state_map[$ STATES.CLEANUP] = game_state_cleanup;
 state_map[$ STATES.CUTSCENE] = game_state_cutscene;
+state_map[$ STATES.END] = game_state_end;
 
 countdown = 0;
 
