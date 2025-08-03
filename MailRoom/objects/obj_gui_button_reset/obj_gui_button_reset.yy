@@ -31,8 +31,8 @@
   "properties": [],
   "solid": false,
   "spriteId": {
-    "name": "spr_button",
-    "path": "sprites/spr_button/spr_button.yy",
+    "name": "spr_gui_button_reset",
+    "path": "sprites/spr_gui_button_reset/spr_gui_button_reset.yy",
   },
   "spriteMaskId": null,
   "visible": true,

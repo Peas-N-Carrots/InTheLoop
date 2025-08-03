@@ -1,3 +1,4 @@
+randomize();
 letters = [];
 
 global.colors = {}
@@ -10,15 +11,24 @@ global.colors[$ FIELD_TYPES.VERB] = c_red;
 enum STATES	{
 	FREE,
 	PICK_UP,
-	SWAPPING
+	SWAPPING,
+	SETUP,
+	CLEANUP
 }
 
-state = STATES.FREE;
+state = STATES.SETUP;
 carried_letter = pointer_null;
 carried_button = pointer_null;
+swapped = false;
 
 function add_letter(_letter_data, _letter_name) {
-	array_push(letters, create_letter(_letter_data[$ _letter_name]))
+	var _letter = create_letter(_letter_data[$ _letter_name]);
+	_letter.set_paper_position(-240, irandom_range(20, 40));
+	var _speed = 60 * power(0.8, array_length(letters));
+	var _dir = random_range(-2, 2);
+	_letter.speed_x = lengthdir_x(_speed, _dir);
+	_letter.speed_y = lengthdir_y(_speed, _dir);
+	array_push(letters, _letter);
 }
 
 function sort_letters() {
@@ -47,7 +57,7 @@ sort_letters();
 //global.cabinet.get_mail()
 
 function game_state_free() {
-	if (mouse_check_button_pressed(mb_left)) {
+	if (mouse_check_button_pressed(mb_left) && !position_meeting(mouse_x, mouse_y, obj_gui_button)) {
 		var _target = get_mouse_target();
 		
 		var _letter = _target[0];
@@ -57,7 +67,7 @@ function game_state_free() {
 		
 		if (_letter) {
 			carried_letter = _letter;
-			if (!_button) {
+			if (!_button || swapped) {
 				state = STATES.PICK_UP;
 				with (carried_letter) {
 					carried = true;
@@ -116,12 +126,30 @@ function game_state_swapping() {
 				carried_letter.update_output_text();
 				
 				sort_letters();
+				
+				swapped = true;
 			}
 		}
 		
 		state = STATES.FREE;
 		carried_letter = pointer_null;
 		carried_button = pointer_null;
+	}
+}
+
+function game_state_setup() {
+	for (var _i = 0; _i < array_length(letters); _i++) {
+		if (point_distance(0, 0, letters[_i].speed_x, letters[_i].speed_y) > 1) {
+			state = STATES.FREE;
+		}
+	}
+}
+
+function game_state_cleanup() {
+	for (var _i = 0; _i < array_length(letters); _i++) {
+		if (letters[_i].y > -300) {
+			//state = STATES.FREE;
+		}
 	}
 }
 
@@ -174,6 +202,10 @@ state_map = {}
 state_map[$ STATES.FREE] = game_state_free;
 state_map[$ STATES.PICK_UP] = game_state_pick_up;
 state_map[$ STATES.SWAPPING] = game_state_swapping;
+state_map[$ STATES.SETUP] = game_state_setup;
+state_map[$ STATES.CLEANUP] = game_state_cleanup;
+
+countdown = 0;
 
 display_set_gui_size(640, 360);
 
@@ -184,7 +216,7 @@ function draw_carried_button(_button, _x, _y) {
 	var _color = global.colors[$ _button.field_type];
 	
 	draw_sprite_ext(spr_button, 0, _x, _y, _button.image_xscale, 1, 0, c_white, 1);
-	draw_sprite_ext(spr_button, 0, _x, _y, _button.image_xscale, 1, 0, _color, 0.1);
+	draw_sprite_ext(spr_button, 0, _x, _y, _button.image_xscale, 1, 0, _color, BUTTON_OPACITY);
 	
 	draw_button_text(_button.field_value, _x, _y, _color);
 }

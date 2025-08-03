@@ -1,6 +1,8 @@
 #macro FONT_TRACKING 7
 #macro FONT_LEADING 12
 
+#macro BUTTON_OPACITY (0.15 + 0.03 * sin(current_time * .001 * pi * 2))
+
 function swap_field(_index, _val) {
 	fields[_index][1] = _val
 }
@@ -165,3 +167,6 @@ carried = false;
 
 prev_mouse_x = 0;
 prev_mouse_y = 0;
+
+speed_x = 0;
+speed_y = 0;

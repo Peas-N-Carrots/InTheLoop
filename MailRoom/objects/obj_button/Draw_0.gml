@@ -3,7 +3,9 @@ var _alpha = 0.15;
 
 if (!carried) {
 	_color = global.colors[$ field_type];
-	_alpha = 0.1
+	_alpha = BUTTON_OPACITY;
 }
 
-draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, _color, _alpha);
+if (!global.game.swapped && (!global.game.carried_button || global.game.carried_button.field_type == field_type)) {
+	draw_sprite_ext(sprite_index, image_index, x, y, image_xscale, image_yscale, image_angle, _color, _alpha);
+}

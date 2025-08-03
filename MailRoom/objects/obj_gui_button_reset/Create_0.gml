@@ -17,6 +17,13 @@ function reset_fields() {
 	}
 	
 	global.game.sort_letters();
+	
+	global.game.swapped = false;
 }
 
-action_script = reset_fields
+function reset_active() {
+	return global.game.swapped;
+}
+
+action_script = reset_fields;
+condition_script = reset_active;
